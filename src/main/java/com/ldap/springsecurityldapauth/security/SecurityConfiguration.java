@@ -1,5 +1,6 @@
 package com.ldap.springsecurityldapauth.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,6 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    private final String ldapUrl;
+
+    public SecurityConfiguration(@Value("${ldap.url}") String ldapUrl) {
+        this.ldapUrl = ldapUrl;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -25,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .userDnPatterns("uid={0},ou=people")
                 .groupSearchBase("ou=groups")
                 .contextSource()
-                .url("ldap://localhost:8389/dc=springframework,dc=org")
+                .url(ldapUrl)
                 .and()
                 .passwordCompare()
                 .passwordEncoder(new BCryptPasswordEncoder())
